@@ -5,7 +5,7 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from zxcvbn import zxcvbn
 
-host = "12.0.0.1"
+host = "127.0.0.1"
 port = 6002
 
 
@@ -29,15 +29,11 @@ class RequestHandler(BaseHTTPRequestHandler):
         password = request_body["password"]
         password_strength = zxcvbn(password)
 
-        response = {
-            "password": password,
-            "password_strength": password_strength
-            }
-        response_body = json.dumps(response).encode("utf-8")
+        response_body = json.dumps(password_strength, default=str).encode("utf-8")
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
-        self.send_header("Content-Length", len(response))
+        self.send_header("Content-Length", str(len(response_body)))
         self.end_headers()
         self.wfile.write(response_body)
 
